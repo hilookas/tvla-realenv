@@ -6,7 +6,7 @@ import cv2
 
 def main():
     parser = argparse.ArgumentParser(description="Hand-Eye Calibration")
-    parser.add_argument("--calib_dir", type=str, default="data/20260114_215220",
+    parser.add_argument("--calib_dir", type=str, default="data/20260115_175549",
                            help="Path to the calibration data directory")
     args = parser.parse_args()
 
@@ -22,15 +22,16 @@ def main():
     img_size = None
     obj_points = []
     img_points = []
+    Tbase2tcps = []
 
     XX = 6 #标定板的中长度对应的角点的个数
     YY = 4  #标定板的中宽度对应的角点的个数
-    L = 0.038 #标定板一格的长度  单位为米
+    L = 0.02 #标定板一格的长度  单位为米
 
     objp = np.zeros((XX * YY, 3), np.float32)
     objp[:, :2] = np.mgrid[0:XX, 0:YY].T.reshape(-1, 2) * L     # 将世界坐标系建在标定板上，所有点的Z坐标全部为0，所以只需要赋值x和y
 
-    for img_path in img_paths:
+    for img_path, Ttcp2base in zip(img_paths, Ttcp2bases):
         img_bgr = cv2.imread(calib_dir / img_path)
         img_gray = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY)
 
@@ -41,15 +42,17 @@ def main():
         cv2.imwrite(str(calib_dir / "debug" / f"{Path(img_path).stem}.jpg"), cv2.drawChessboardCorners(img_bgr, (XX, YY), corners, ret))
 
         if ret:
-            obj_points.append(objp)
-
             corners2 = cv2.cornerSubPix(img_gray, corners, (5, 5), (-1, -1), (cv2.TERM_CRITERIA_MAX_ITER | cv2.TERM_CRITERIA_EPS, 30, 0.001))  # 在原角点的基础上寻找亚像素角点
             assert [corners2]
             corners2 = corners2.squeeze(1) # (24, 2)
+
+            obj_points.append(objp)
             img_points.append(corners2)
+            Tbase2tcps.append(np.linalg.inv(Ttcp2base))
 
     obj_points = np.array(obj_points)  # (N, 24, 3)
     img_points = np.array(img_points)  # (N, 24, 2)
+    Tbase2tcps = np.array(Tbase2tcps)
 
     with open(calib_dir / "cam_intrinsic.json", "r") as f:
         cam_intrinsic = json.load(f)
@@ -81,7 +84,7 @@ def main():
     #     HandEyeCalibrationMethod method = CALIB_HAND_EYE_TSAI
     # )
 
-    R, t = cv2.calibrateHandEye(np.linalg.inv(Ttcp2bases)[:, :3, :3], np.linalg.inv(Ttcp2bases)[:, :3, 3], rvecs, tvecs, cv2.CALIB_HAND_EYE_TSAI) # eef2base target2cam -> cam2base?
+    R, t = cv2.calibrateHandEye(Tbase2tcps[:, :3, :3], Tbase2tcps[:, :3, 3], rvecs, tvecs, cv2.CALIB_HAND_EYE_TSAI) # eef2base target2cam -> cam2base?
     Tcam2base = np.eye(4)
     Tcam2base[:3, :3] = R
     Tcam2base[:3, 3] = t.squeeze(1)
