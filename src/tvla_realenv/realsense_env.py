@@ -26,7 +26,7 @@ def list_all_realsense_cameras():
         print(f"[{i}] 型号: {dev_info['name']} | 序列号: {dev_info['serial_number']} | 固件: {dev_info['firmware_version']}")
     return camera_list
 
-class RealSenseEnv:
+class RealsenseEnv:
     def __init__(self, serial_number=None):
         self.pipeline = rs.pipeline()
 
@@ -42,6 +42,9 @@ class RealSenseEnv:
         self.pipeline.start(config)
 
         profile = self.pipeline.get_active_profile()
+
+        depth_sensor = profile.get_device().first_depth_sensor()
+        depth_scale = 1 / depth_sensor.get_depth_scale()
 
         depth_profile = rs.video_stream_profile(profile.get_stream(rs.stream.depth))
         depth_intrinsics = depth_profile.get_intrinsics()
@@ -59,7 +62,8 @@ class RealSenseEnv:
                 [0.0, 0.0, 1.0],
             ],
             "distortion": np.array(color_intrinsics.coeffs).tolist(),
-            "distortion_model": str(color_intrinsics.model)
+            "distortion_model": str(color_intrinsics.model),
+            "depth_scale": depth_scale,
         }
 
     def compute_observation(self):
@@ -88,7 +92,7 @@ class RealSenseEnv:
 
 
 if __name__ == "__main__":
-    env = RealSenseEnv()
+    env = RealsenseEnv("342522073637")
     try:
         obs = env.reset()
         with open("cam_intrinsics.json", "w") as f:

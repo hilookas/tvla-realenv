@@ -1,5 +1,5 @@
-from realsense_env import RealSenseEnv
-from realman_env import RealmanEnv
+from tvla_realenv.open3d_realsense_env import Open3dRealsenseEnv
+from tvla_realenv.realman_env import RealmanEnv
 import cv2
 import copy
 from pathlib import Path
@@ -8,7 +8,8 @@ import json
 
 if __name__ == "__main__":
     env = RealmanEnv("192.168.101.19")
-    rs_env = RealSenseEnv("342522073637")
+    # env = RealmanEnv("192.168.101.20")
+    rs_env = Open3dRealsenseEnv("f1471193")
     try:
         obs = env.reset()
         obs |= rs_env.reset()

@@ -69,7 +69,7 @@ class RealmanEnv:
         ret = self.arm.rm_write_single_register(param, 100)
         assert ret == 0, "写夹爪运动速度失败"
 
-    def get_gripper(self):
+    def _get_gripper(self):
         param = rm_peripheral_read_write_params_t(1, 258, 1)
         ret, _ = self.arm.rm_read_holding_registers(param)
 
@@ -78,7 +78,7 @@ class RealmanEnv:
 
         return width_from_realman_gripper_value(gripper_value_state)
 
-    def set_gripper(self, gripper_open):
+    def _set_gripper(self, gripper_open):
         gripper_value_cmd = realman_gripper_value_from_width(gripper_open)
 
         # 设置夹爪目标位置
@@ -97,7 +97,7 @@ class RealmanEnv:
 
         return {
             "Ttcp2base": T_from_realman_xyzrpy(state["pose"]) @ T_TCP2REALMANEEF,
-            "gripper_open": self.get_gripper()
+            "gripper_open": self._get_gripper()
         }
 
     def reset(self):
@@ -110,10 +110,10 @@ class RealmanEnv:
             ret, state = self.arm.rm_get_current_arm_state()
             assert ret == 0, "获取机械臂状态失败"
 
-            self.set_gripper(target_gripper)
+            self._set_gripper(target_gripper)
 
             err = np.linalg.norm(state["joint"] - target_joints)
-            err_gripper = abs(self.get_gripper() - target_gripper)
+            err_gripper = abs(self._get_gripper() - target_gripper)
             if err < 0.01 and err_gripper < 0.001:
                 break
 
@@ -124,7 +124,7 @@ class RealmanEnv:
         pose_target = realman_xyzrpy_from_T(action["Ttcp2base"] @ np.linalg.inv(T_TCP2REALMANEEF))
         self.arm.rm_movep_follow(pose_target)
 
-        self.set_gripper(action["gripper_open"])
+        self._set_gripper(action["gripper_open"])
 
         return self.compute_observation()
 
