@@ -13,7 +13,10 @@ if __name__ == "__main__":
     try:
         obs = env.reset()
         obs |= rs_env.reset()
-        action = copy.deepcopy(obs)
+        action = {
+            "Ttcp2base": obs["Ttcp2base"],
+            "gripper_open": obs["gripper_open"],
+        }
         disable_robot = False
         count = 0
         calib_dir = Path("data") / datetime.now().strftime('%Y%m%d_%H%M%S')
@@ -31,21 +34,30 @@ if __name__ == "__main__":
             k = cv2.waitKey(1)
 
             if k == ord('c'):
-                action = copy.deepcopy(obs)
+                action = {
+                    "Ttcp2base": obs["Ttcp2base"],
+                    "gripper_open": obs["gripper_open"],
+                }
                 disable_robot = False
                 print("Enable robot movement")
 
                 action["gripper_open"] = 0.00
                 print("Closed gripper")
             elif k == ord('o'):
-                action = copy.deepcopy(obs)
+                action = {
+                    "Ttcp2base": obs["Ttcp2base"],
+                    "gripper_open": obs["gripper_open"],
+                }
                 disable_robot = False
                 print("Enable robot movement")
 
                 action["gripper_open"] = 0.09
                 print("Open gripper")
             elif k == ord('e'):
-                action = copy.deepcopy(obs)
+                action = {
+                    "Ttcp2base": obs["Ttcp2base"],
+                    "gripper_open": obs["gripper_open"],
+                }
                 disable_robot = False
                 print("Enable robot movement")
             elif k == ord('d'):
