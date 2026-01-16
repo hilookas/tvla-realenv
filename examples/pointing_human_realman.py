@@ -111,8 +111,7 @@ if __name__ == "__main__":
             debug_img = obs["rgb"][:,:,::-1]
             # import ipdb; ipdb.set_trace()
             print(obs["Ttcp2base"])
-            # debug_img = draw_xyz_axis(debug_img, np.linalg.inv(np.array(cam_results["Tcam2base"])), K=np.array(rs_env.meta_obs["intrinsic"]))
-
+            debug_img = draw_xyz_axis(debug_img, np.linalg.inv(np.array(cam_results["Tcam2base"])), K=np.array(rs_env.meta_obs["intrinsic"]), is_input_rgb=False)
             debug_img = draw_xyz_axis(debug_img, np.linalg.inv(np.array(cam_results["Tcam2base"])) @ obs["Ttcp2base"], K=np.array(rs_env.meta_obs["intrinsic"]), is_input_rgb=False)
 
             if clicked_point is not None:
@@ -132,7 +131,7 @@ if __name__ == "__main__":
 
                 x, y, z, _ = np.array(cam_results["Tcam2base"]) @ np.array([x, y, z, 1])
 
-                z += 0.030 # z+3cm offset
+                z += 0.020 # z+2cm offset
 
                 new_Ttcp2base = copy.deepcopy(obs["Ttcp2base"])
                 new_Ttcp2base[:3, 3] = np.array([x, y, z])

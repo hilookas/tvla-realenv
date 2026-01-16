@@ -50,7 +50,7 @@ T_TCP2REALMANEEF = transform_from(
         [0, -1, 0],
         [1, 0, 0],
     ]),
-    np.array([0, 0, 0.225])
+    np.array([0, 0, 0.235])
 )
 
 class RealmanEnv:
