@@ -74,7 +74,11 @@ class FrankaEnv:
         return self.compute_observation()
 
     def close(self):
-        pass
+        if self.gripper_thread is not None:
+            with self.gripper_lock:
+                self.gripper_target_width = None
+            self.gripper_thread.join()
+            self.gripper_thread = None
 
 
 if __name__ == "__main__":
