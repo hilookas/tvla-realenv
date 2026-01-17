@@ -514,6 +514,15 @@ wheels = [
 ]
 
 [[package]]
+name = "franky"
+version = "0.0.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/37/c3/8c8fd3f09aee9aaf3533389084603b3acc36b22422469784dd8d2ef14d30/franky-0.0.1.tar.gz", hash = "sha256:e659be53d8075f42e2db7ab93351c3b679192dfdb0176aa5f8b1f402277077d7", size = 2902, upload-time = "2023-02-16T08:25:39.801Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/e9/8b/b5e4bc6846d1ed00f2c6116b1d605fb0a52e61abfe620a79081dfcbe45d6/franky-0.0.1-py3-none-any.whl", hash = "sha256:416c125a2c9f074434d0de789dc729fa0f46d11fd329446c9d91d3488c54e08e", size = 2447, upload-time = "2023-02-16T08:25:38.317Z" },
+]
+
+[[package]]
 name = "h11"
 version = "0.16.0"
 source = { registry = "https://pypi.org/simple" }
@@ -2566,6 +2575,7 @@ name = "tvla-realenv"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
+    { name = "franky" },
     { name = "ipdb" },
     { name = "numpy", version = "2.2.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
     { name = "numpy", version = "2.4.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
@@ -2579,6 +2589,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
+    { name = "franky", specifier = ">=0.0.1" },
     { name = "ipdb", specifier = ">=0.13.13" },
     { name = "numpy", specifier = ">=2.2.6" },
     { name = "open3d", specifier = ">=0.19.0" },
