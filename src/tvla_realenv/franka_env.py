@@ -16,8 +16,33 @@ class FrankaEnv:
         self.robot = Robot(robot_ip)
         self.robot.recover_from_errors()
 
+        if impedance:
+            # Set collision behavior
+            self.robot.set_collision_behavior(
+                lower_torque_threshold = [200.0] * 7,  # Nm
+                upper_torque_threshold = [400.0] * 7,  # Nm
+                lower_force_threshold = [100.0] * 6,  # N (linear) and Nm (angular)
+                upper_force_threshold = [200.0] * 6,  # N (linear) and Nm (angular)
+            )
+
+            # # Set joint impedance
+            self.robot.set_joint_impedance([30.0, 30.0, 30.0, 25.0, 25.0, 20.0, 20.0])  # Nm/rad # franky use joint impedance control insde
+            self.robot.set_cartesian_impedance([3000.0, 3000.0, 3000.0, 300.0, 300.0, 300.0])  # N/m and Nm/rad])
+        else:
+            # Set collision behavior
+            self.robot.set_collision_behavior(
+                lower_torque_threshold = [20.0] * 7,  # Nm
+                upper_torque_threshold = [40.0] * 7,  # Nm
+                lower_force_threshold = [10.0] * 6,  # N (linear) and Nm (angular)
+                upper_force_threshold = [20.0] * 6,  # N (linear) and Nm (angular)
+            )
+
+            # Set joint impedance
+            self.robot.set_joint_impedance([3000.0, 3000.0, 3000.0, 2500.0, 2500.0, 2000.0, 2000.0])  # Nm/rad
+            self.robot.set_cartesian_impedance([3000.0, 3000.0, 3000.0, 300.0, 300.0, 300.0])  # N/m and Nm/rad])
+
         # Reduce the acceleration and velocity dynamic
-        self.robot.relative_dynamics_factor = 0.1
+        self.robot.relative_dynamics_factor = 0.01
 
         self.gripper = Gripper(robot_ip)
 
